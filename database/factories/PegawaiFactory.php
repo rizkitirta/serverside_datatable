@@ -23,7 +23,7 @@ class PegawaiFactory extends Factory
     {
         return [
             'nama_pegawai' => $this->faker->name(),
-            'jenis_kelamin' => "",
+            'jenis_kelamin' => $this->faker->randomElement(['Laki-laki', 'Perempuan']),
             'email' => $this->faker->unique()->safeEmail(),
             'alamat' => $this->faker->address,
 

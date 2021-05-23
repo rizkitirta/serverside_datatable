@@ -15,7 +15,16 @@ class PegawaiController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            return datatables()->of(Pegawai::all())->make(true);
+            return datatables()->of(Pegawai::all())
+            ->addColumn('action', function($data){
+                $button = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$data->id.'" data-original-title="Edit" class="edit btn btn-info btn-sm edit-post">Edit</a>';
+                $button .= '&nbsp;&nbsp;';
+                $button .= '<button type="button" name="delete" id="'.$data->id.'" class="delete btn btn-danger btn-sm mt-1">Delete</button>';
+                return $button;
+            })
+            ->rawColumns(['action'])
+            ->addIndexColumn()
+            ->make(true);
         }
 
         return view('pegawai');
@@ -39,7 +48,17 @@ class PegawaiController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $id = $request->id;
+
+        $post   =   Pegawai::updateOrCreate(['id' => $id],
+                    [
+                        'nama_pegawai' => $request->nama_pegawai,
+                        'jenis_kelamin' => $request->jenis_kelamin,
+                        'email' => $request->email,
+                        'alamat' => $request->alamat,
+                    ]);
+
+        return response()->json($post);
     }
 
     /**
@@ -61,7 +80,10 @@ class PegawaiController extends Controller
      */
     public function edit($id)
     {
-        //
+        $where = array('id' => $id);
+        $post  = Pegawai::where($where)->first();
+
+        return response()->json($post);
     }
 
     /**
@@ -84,6 +106,8 @@ class PegawaiController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post = Pegawai::where('id',$id)->delete();
+
+        return response()->json($post);
     }
 }
